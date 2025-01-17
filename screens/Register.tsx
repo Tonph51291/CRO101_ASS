@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import Colors from "../constants/Colors";
-import images from "../constants";
+
 import image from "@/constants/image";
 import Icon from "@/constants/icon";
 import Fonts from "@/constants/fonts";
@@ -16,7 +16,7 @@ import fonts from "@/constants/fonts";
 import { Dimensions } from "react-native";
 import icon from "@/constants/icon";
 
-function Register(props) {
+function Register(props: any) {
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />

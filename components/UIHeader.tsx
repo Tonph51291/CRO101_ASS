@@ -5,7 +5,7 @@ import Colors from "@/constants/Colors";
 
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 
-function UIHeader(props) {
+function UIHeader(props: any) {
   return (
     <View style={styles.header}>
       <TouchableOpacity

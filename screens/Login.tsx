@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import Colors from "../constants/Colors";
-import images from "../constants";
+
 import image from "@/constants/image";
 import Icon from "@/constants/icon";
 import Fonts from "@/constants/fonts";
@@ -18,7 +18,7 @@ import icon from "@/constants/icon";
 
 const screenWidth = Dimensions.get("window").width;
 
-function Login(props) {
+function Login(props: any) {
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />
