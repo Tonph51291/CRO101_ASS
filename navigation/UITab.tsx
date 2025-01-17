@@ -25,7 +25,7 @@ export default function UITab() {
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               name="home"
-              size={25}
+              size={30}
               color={focused ? Colors.orange : Colors.brightRed}
             />
           ),
@@ -37,8 +37,8 @@ export default function UITab() {
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
-              name="shopping-cart"
-              size={25}
+              name="shopping-bag"
+              size={30}
               color={focused ? Colors.orange : Colors.brightRed}
             />
           ),
@@ -51,7 +51,7 @@ export default function UITab() {
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               name="favorite"
-              size={25}
+              size={30}
               color={focused ? Colors.orange : Colors.brightRed}
             />
           ),
@@ -63,8 +63,8 @@ export default function UITab() {
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
-              name="history"
-              size={25}
+              name="notifications"
+              size={30}
               color={focused ? Colors.orange : Colors.brightRed}
             />
           ),

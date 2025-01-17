@@ -15,8 +15,10 @@ import Fonts from "@/constants/fonts";
 import fonts from "@/constants/fonts";
 import { Dimensions } from "react-native";
 import icon from "@/constants/icon";
+import { useNavigation } from "expo-router";
 
 function Register(props: any) {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />
@@ -88,7 +90,7 @@ function Register(props: any) {
         </Text>
         <Text
           onPress={() => {
-            alert("Thông bao");
+            navigation.navigate("Login");
           }}
           style={{ color: Colors.orange, fontWeight: "700", fontSize: 18 }}
         >

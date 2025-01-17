@@ -18,6 +18,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import { UIHeader } from "../components";
 import ItemProduct from "@/components/ItemProduct";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "expo-router";
 
 const CARD_WIDTH = Dimensions.get("window").width * 0.35;
 const CARD_HEIGHT = CARD_WIDTH * 1;
@@ -30,6 +31,7 @@ function Home(props: any) {
     { id: "5", name: "Macchiato" },
   ];
   const [selector, setSelector] = useState("All");
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <UIHeader />
@@ -115,7 +117,13 @@ function Home(props: any) {
                 horizontal={true}
                 data={[...Array(9)]} // Replace with your actual data
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => <ItemProduct />}
+                renderItem={({ item }) => (
+                  <ItemProduct
+                    onPress={() => {
+                      navigation.navigate("ProductDetail");
+                    }}
+                  />
+                )}
               />
             </View>
           );

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -15,10 +16,12 @@ import Fonts from "@/constants/fonts";
 
 import { Dimensions } from "react-native";
 import icon from "@/constants/icon";
+import { useNavigation } from "expo-router";
 
 const screenWidth = Dimensions.get("window").width;
 
-function Login(props: any) {
+function Login() {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />
@@ -47,7 +50,12 @@ function Login(props: any) {
           }}
         />
       </View>
-      <TouchableOpacity style={styles.styleButton}>
+      <TouchableOpacity
+        style={styles.styleButton}
+        onPress={() => {
+          navigation.navigate("UITab");
+        }}
+      >
         <Text style={styles.textButton}>Sign in</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.styleGG}>
@@ -66,16 +74,26 @@ function Login(props: any) {
         <Text style={{ color: Colors.white, fontSize: 18 }}>
           Don’t have account? Click
         </Text>
-        <Text style={{ color: Colors.orange, fontWeight: "700", fontSize: 18 }}>
+        <Text
+          onPress={() => {
+            navigation.navigate("Register");
+          }}
+          style={{ color: Colors.orange, fontWeight: "700", fontSize: 18 }}
+        >
           Register
         </Text>
       </View>
-      <View style={{ flexDirection: "row", margin: 20 }}>
+      <View style={{ flexDirection: "row", marginTop: 50 }}>
         <Text style={{ color: Colors.white, fontSize: 18 }}>
-          Forget Password? Click
+          Don’t have an account? Click
         </Text>
-        <Text style={{ color: Colors.orange, fontWeight: "700", fontSize: 18 }}>
-          Reset
+        <Text
+          onPress={() => {
+            navigation.navigate("Register");
+          }}
+          style={{ color: Colors.orange, fontWeight: "700", fontSize: 18 }}
+        >
+          Register
         </Text>
       </View>
     </View>

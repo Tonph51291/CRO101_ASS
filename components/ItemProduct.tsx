@@ -114,6 +114,7 @@ export default function ItemProduct(props: any) {
               alignItems: "center",
               borderRadius: 10,
             }}
+            onPress={props.onPress}
           >
             <Icon name="plus" size={18} color={"white"} />
           </TouchableOpacity>
