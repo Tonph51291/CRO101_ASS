@@ -1,10 +1,14 @@
 import { UIHeader } from "@/components";
 import Colors from "@/constants/Colors";
 import { Text, TouchableOpacity } from "react-native";
+import image from "../constants/image";
 import { ImageBackground } from "react-native";
 import { Image, StyleSheet, View } from "react-native";
+import { useNavigation } from "expo-router";
+import { NavigationProp } from "@react-navigation/native";
 
 export default function ProductDetails(props: any) {
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.viewImg}>
@@ -15,7 +19,13 @@ export default function ProductDetails(props: any) {
           style={styles.imgStyle}
         />
         <View style={{ position: "absolute", top: 10, width: "100%" }}>
-          <UIHeader />
+          <UIHeader
+            iconLeft={image.back}
+            iconRight={image.heart}
+            onPress={() => {
+              navigation.navigate("UITab");
+            }}
+          />
         </View>
         <View style={styles.imgText}>
           <View

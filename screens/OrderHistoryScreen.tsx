@@ -1,9 +1,181 @@
-import { Text, View } from "react-native";
+import { UIHeader } from "@/components";
+import { icon } from "@/constants";
+import Colors from "@/constants/Colors";
+import image from "@/constants/image";
+import { LinearGradient } from "expo-linear-gradient";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function OrderHistoryScreen() {
   return (
-    <View>
-      <Text>9.1 Order History Screen</Text>
+    <View style={styles.container}>
+      <UIHeader
+        iconLeft={icon.menu}
+        title="Order History"
+        iconRight={image.ton}
+      />
+
+      <View>
+        <View style={styles.dateContainer}>
+          <View>
+            <Text style={styles.textDate}>Order Date</Text>
+            <Text style={styles.textTimeOder}>20/09/2025</Text>
+          </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={styles.textDate}>Order Date</Text>
+            <Text style={styles.textPrice}>$ 750</Text>
+          </View>
+        </View>
+        <LinearGradient
+          colors={["#262B33", "#262B330"]}
+          style={styles.containerCard}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              style={styles.styleImage}
+              source={require("@/assets/images/image5.png")}
+            />
+            <View>
+              <Text style={styles.textName}>Cappuccino</Text>
+              <Text style={styles.textTitle}>With Steamed Milk</Text>
+            </View>
+            <Text style={styles.textPriceTitle}>
+              $ <Text style={{ color: "white" }}>35</Text>
+            </Text>
+          </View>
+          <View style={styles.containerQuality}>
+            <View style={styles.containerSumPriceAndSize}>
+              <View style={styles.backContainerSize}>
+                <Text style={styles.textSize}>S</Text>
+              </View>
+              <View style={styles.backContainerSumPrice}>
+                <Text style={styles.textSumPrice}>
+                  $ <Text style={{ color: "white" }}>35</Text>
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.textSumPrice}>
+              X <Text style={{ color: "white" }}>2</Text>
+            </Text>
+            <Text style={styles.textSumPrice}>8</Text>
+          </View>
+          <View style={styles.containerQuality}>
+            <View style={styles.containerSumPriceAndSize}>
+              <View style={styles.backContainerSize}>
+                <Text style={styles.textSize}>S</Text>
+              </View>
+              <View style={styles.backContainerSumPrice}>
+                <Text style={styles.textSumPrice}>
+                  $ <Text style={{ color: "white" }}>35</Text>
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.textSumPrice}>
+              X <Text style={{ color: "white" }}>2</Text>
+            </Text>
+            <Text style={styles.textSumPrice}>8</Text>
+          </View>
+        </LinearGradient>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.brightRed,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 10,
+  },
+  textDate: {
+    color: "white",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  textTimeOder: {
+    color: "white",
+    fontSize: 17,
+    fontWeight: "400",
+  },
+
+  textPrice: {
+    color: Colors.orange,
+    fontSize: 17,
+    fontWeight: "400",
+  },
+  containerCard: {
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+  },
+  styleImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+  },
+  titleContainer: {},
+  titleTextContainer: {},
+  textName: {
+    color: "white",
+    fontWeight: "400",
+    fontSize: 20,
+  },
+  textTitle: { color: "white", fontWeight: "400", fontSize: 15 },
+  textPriceTitle: {
+    color: Colors.orange,
+    fontSize: 25,
+    fontWeight: "bold",
+  },
+  containerQuality: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingEnd: 10,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  containerSumPriceAndSize: { flexDirection: "row" },
+  backContainerSize: {
+    backgroundColor: "#0C0F14",
+    width: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+
+  backContainerSumPrice: {
+    backgroundColor: "#0C0F14",
+    width: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    marginLeft: 1,
+    paddingVertical: 5,
+  },
+
+  textSize: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "white",
+  },
+  textQuality: {},
+  textSumPrice: {
+    color: Colors.orange,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+});

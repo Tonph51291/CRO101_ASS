@@ -10,7 +10,7 @@ import {
 import image from "../constants/image";
 import Colors from "@/constants/Colors";
 
-function Welcome(props) {
+function Welcome(props: any) {
   return (
     <View
       style={{

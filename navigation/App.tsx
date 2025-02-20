@@ -1,11 +1,13 @@
+import React from "react";
 import Login from "@/screens/Login";
+
 import Welcome from "@/screens/Welcome";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import UITab from "./UITab";
 import { NavigationContainer } from "@react-navigation/native";
 import ProductDetails from "@/screens/ProductDetails";
 import Register from "@/screens/Register";
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (

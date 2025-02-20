@@ -19,9 +19,11 @@ import { UIHeader } from "../components";
 import ItemProduct from "@/components/ItemProduct";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
+import { NavigationProp } from "@react-navigation/native";
 
 const CARD_WIDTH = Dimensions.get("window").width * 0.35;
 const CARD_HEIGHT = CARD_WIDTH * 1;
+
 function Home(props: any) {
   const category = [
     { id: "1", name: "All" },
@@ -31,10 +33,10 @@ function Home(props: any) {
     { id: "5", name: "Macchiato" },
   ];
   const [selector, setSelector] = useState("All");
-  const navigation = useNavigation();
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
   return (
     <View style={styles.container}>
-      <UIHeader />
+      <UIHeader iconLeft={icon.menu} iconRight={image.ton} />
       <Text style={styles.textStyle}>Find the best coffee for you</Text>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <TextInput

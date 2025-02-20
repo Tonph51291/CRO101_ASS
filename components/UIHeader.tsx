@@ -6,6 +6,8 @@ import Colors from "@/constants/Colors";
 import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 
 function UIHeader(props: any) {
+  const { iconRight, iconLeft, title } = props;
+
   return (
     <View style={styles.header}>
       <TouchableOpacity
@@ -20,17 +22,34 @@ function UIHeader(props: any) {
           borderWidth: 1,
           marginStart: 10,
         }}
+        onPress={props.onPress}
       >
-        <Image source={icon.menu} style={{ width: 20, height: 20 }} />
+        <Image source={iconLeft} style={{ width: 20, height: 20 }} />
       </TouchableOpacity>
-      <View style={{ flex: 1 }}></View>
-      <View style={{ width: 30, height: 30, marginEnd: 10 }}>
-        <Image
-          source={image.ton}
-          style={{ width: 30, height: 50 }}
-          borderRadius={10}
-        />
-      </View>
+      <Text style={styles.styleTextTitle}>{title}</Text>
+      {iconRight == undefined ? (
+        <View style={{ width: 40 }} />
+      ) : (
+        <View
+          style={{
+            height: 40,
+            width: 40,
+            backgroundColor: "#21262E",
+            justifyContent: "center",
+            alignItems: "center",
+            borderColor: Colors.mediumGray,
+            borderRadius: 5,
+            borderWidth: 1,
+            marginStart: 10,
+          }}
+        >
+          <Image
+            source={iconRight}
+            style={{ width: 30, height: 30 }}
+            resizeMode="cover"
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -40,6 +59,14 @@ const styles = StyleSheet.create({
     height: 30,
     flexDirection: "row",
     justifyContent: "center",
+  },
+  styleTextTitle: {
+    flex: 1,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "700",
+    fontSize: 20,
+    fontFamily: "poppins",
   },
 });
 export default UIHeader;

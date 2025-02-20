@@ -16,9 +16,10 @@ import fonts from "@/constants/fonts";
 import { Dimensions } from "react-native";
 import icon from "@/constants/icon";
 import { useNavigation } from "expo-router";
+import { NavigationProp } from "@react-navigation/native";
 
 function Register(props: any) {
-  const navigation = useNavigation();
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />

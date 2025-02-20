@@ -16,6 +16,12 @@ export default function UITab() {
         tabBarHideOnKeyboard: true,
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: Colors.brightRed,
+          borderTopWidth: 0, // Loại bỏ viền nếu có
+          elevation: 0, // Xóa hiệu ứng nổi (Android)
+          opacity: 0.9,
+        },
       }}
     >
       <Tab.Screen
@@ -26,7 +32,7 @@ export default function UITab() {
             <Icon
               name="home"
               size={30}
-              color={focused ? Colors.orange : Colors.brightRed}
+              color={focused ? Colors.orange : "#4E5053"}
             />
           ),
         }}
@@ -39,7 +45,7 @@ export default function UITab() {
             <Icon
               name="shopping-bag"
               size={30}
-              color={focused ? Colors.orange : Colors.brightRed}
+              color={focused ? Colors.orange : "#4E5053"}
             />
           ),
         }}
@@ -52,7 +58,7 @@ export default function UITab() {
             <Icon
               name="favorite"
               size={30}
-              color={focused ? Colors.orange : Colors.brightRed}
+              color={focused ? Colors.orange : "#4E5053"}
             />
           ),
         }}
@@ -65,7 +71,7 @@ export default function UITab() {
             <Icon
               name="notifications"
               size={30}
-              color={focused ? Colors.orange : Colors.brightRed}
+              color={focused ? Colors.orange : "#4E5053"}
             />
           ),
         }}
