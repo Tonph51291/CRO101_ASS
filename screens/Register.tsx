@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -17,9 +17,26 @@ import { Dimensions } from "react-native";
 import icon from "@/constants/icon";
 import { useNavigation } from "expo-router";
 import { NavigationProp } from "@react-navigation/native";
+import { register } from "@/repositories/apiUsers";
 
 function Register(props: any) {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [configPassword, setConfigPassword] = useState("");
+
+  const login = async () => {
+    console.log("au ");
+    try {
+      await register({ name, email, password });
+      console.log("Oke");
+      alert("Thành công");
+    } catch (error) {
+      console.log("Lỗi", error);
+    }
+  };
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />
@@ -27,19 +44,25 @@ function Register(props: any) {
       <Text style={styles.textContinue}>Login to Continue</Text>
       <TextInput
         style={styles.textInput}
-        placeholder="Email"
+        placeholder="Name"
         placeholderTextColor={Colors.mediumGray}
+        value={name}
+        onChangeText={(text) => setName(text)}
       />
       <TextInput
         style={styles.textInput}
         placeholder="Email"
         placeholderTextColor={Colors.mediumGray}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
       />
       <View style={{ width: "100%", flexDirection: "row", marginStart: 20 }}>
         <TextInput
           style={styles.textInput}
           placeholder="Password"
           placeholderTextColor={Colors.mediumGray}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
         <Image
           source={icon.eye}
@@ -57,6 +80,8 @@ function Register(props: any) {
           style={styles.textInput}
           placeholder="Password"
           placeholderTextColor={Colors.mediumGray}
+          value={configPassword}
+          onChangeText={(text) => setConfigPassword(text)}
         />
         <Image
           source={icon.eye}
@@ -70,7 +95,7 @@ function Register(props: any) {
         />
       </View>
 
-      <TouchableOpacity style={styles.styleButton}>
+      <TouchableOpacity style={styles.styleButton} onPress={login}>
         <Text style={styles.textButton}>Sign in</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.styleGG}>

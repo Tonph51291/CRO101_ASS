@@ -7,12 +7,13 @@ import FavoriteScreen from "@/screens/FavoriteScreen";
 import OrderHistoryScreen from "@/screens/OrderHistoryScreen";
 import SettingScreen from "@/screens/SettingScreen";
 import PersonalDetailsScreens from "@/screens/PersonalDetailsScreens";
+import UITab from "@/navigation/UITab";
 
 export default function Page() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={Colors.brightRed} barStyle="default" />
-      <PersonalDetailsScreens />
+      <App />
     </View>
   );
 }

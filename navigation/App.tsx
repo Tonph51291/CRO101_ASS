@@ -7,12 +7,12 @@ import UITab from "./UITab";
 import { NavigationContainer } from "@react-navigation/native";
 import ProductDetails from "@/screens/ProductDetails";
 import Register from "@/screens/Register";
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="UITab"
       screenOptions={{
         headerShown: false,
       }}
@@ -21,7 +21,7 @@ export default function App() {
       <Stack.Screen name="Login" component={Login} />
 
       <Stack.Screen name="UITab" component={UITab} />
-      <Stack.Screen name="ProductDetail" component={ProductDetails} />
+      <Stack.Screen name="Details" component={ProductDetails} />
       <Stack.Screen name="Register" component={Register} />
     </Stack.Navigator>
   );

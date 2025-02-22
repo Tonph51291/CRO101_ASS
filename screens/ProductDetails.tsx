@@ -1,20 +1,49 @@
 import { UIHeader } from "@/components";
 import Colors from "@/constants/Colors";
-import { Text, TouchableOpacity } from "react-native";
+import { SafeAreaView, Text, TouchableOpacity } from "react-native";
 import image from "../constants/image";
 import { ImageBackground } from "react-native";
 import { Image, StyleSheet, View } from "react-native";
 import { useNavigation } from "expo-router";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useRoute } from "@react-navigation/native";
+import { BASE_URL } from "@/repositories/baseURL";
+import { useState } from "react";
 
-export default function ProductDetails(props: any) {
+export default function ProductDetails() {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const router = useRoute();
+  const { products } = router.params as { products: any };
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const handleSizeSelection = (size: string, price: number) => {
+    setSelectedSizes((prev) => {
+      let updatedSizes;
+
+      if (prev.includes(size)) {
+        updatedSizes = prev.filter((s) => s !== size);
+      } else {
+        updatedSizes = [...prev, size];
+      }
+
+      // Tính tổng giá dựa trên các size đã chọn
+      const newTotal = products.prices
+        .filter((item: { size: string; price: number }) =>
+          updatedSizes.includes(item.size)
+        )
+        .reduce((sum: number, item: any) => sum + Number(item.price), 0); // Đảm bảo
+      setTotalPrice(parseFloat(newTotal.toFixed(2)));
+
+      return updatedSizes;
+    });
+  };
+
+  console.log(products.prices);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.viewImg}>
         <ImageBackground
           source={{
-            uri: "https://img.freepik.com/free-photo/delicious-coffee-beans-cup_23-2150691429.jpg",
+            uri: `${BASE_URL}/${products.imagelink_portrait}`,
           }}
           style={styles.imgStyle}
         />
@@ -42,7 +71,7 @@ export default function ProductDetails(props: any) {
                   fontFamily: "poppins",
                 }}
               >
-                Coffee
+                {products.name}
               </Text>
               <Text
                 style={{
@@ -151,7 +180,7 @@ export default function ProductDetails(props: any) {
                   fontFamily: "poppins",
                 }}
               >
-                Medium Roasted
+                {products.roasted}
               </Text>
             </TouchableOpacity>
           </View>
@@ -161,25 +190,41 @@ export default function ProductDetails(props: any) {
         <Text style={{ color: "#AEAEAE", fontSize: 19, marginTop: 5 }}>
           Description
         </Text>
-        <Text style={{ color: "#FFFFFF", marginVertical: 5, fontSize: 14 }}>
-          Arabica beans are by far the most popular type of coffee beans, making
-          up about 60% of the world’s coffee. These tasty beans originated many
-          centuries ago in the highlands of Ethiopia, and may even be the first
-          coffee beans ever consumed!{" "}
+        <Text
+          style={{
+            color: "#FFFFFF",
+            marginVertical: 5,
+            fontSize: 14,
+          }}
+          numberOfLines={5} // Giới hạn tối đa 6 dòng
+          ellipsizeMode="tail" // Thêm "..." nếu nội dung quá dài
+        >
+          {products.description}
         </Text>
+
         <Text style={{ color: "#FFFFFF", marginBottom: 5, fontSize: 16 }}>
           Size
         </Text>
         <View style={styles.sizeStyle}>
-          <TouchableOpacity style={styles.buttonSize}>
-            <Text style={{ color: "#AEAEAE" }}>300ml</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonSize}>
-            <Text style={{ color: "#AEAEAE" }}>300ml</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonSize}>
-            <Text style={{ color: "#AEAEAE" }}>300ml</Text>
-          </TouchableOpacity>
+          {products.prices.map((data: any) => {
+            const isSelected = selectedSizes.includes(data.size);
+
+            console.log("Checking size:", data.price, "=>", isSelected);
+            return (
+              <TouchableOpacity
+                key={data.size}
+                style={[
+                  styles.buttonSize,
+                  isSelected && { backgroundColor: Colors.orange }, // Nếu được chọn thì đổi màu
+                ]}
+                onPress={() => handleSizeSelection(data.size, data.price)}
+              >
+                <Text style={{ color: isSelected ? "white" : "#AEAEAE" }}>
+                  {data.size}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <View style={{ flexDirection: "row", marginTop: 15 }}>
           <View style={{ alignItems: "center" }}>
@@ -192,7 +237,7 @@ export default function ProductDetails(props: any) {
               }}
             >
               {" "}
-              $ <Text style={{ color: "white" }}> 10.0</Text>
+              $ <Text style={{ color: "white" }}> {totalPrice}</Text>
             </Text>
           </View>
           <TouchableOpacity style={styles.buttonAdd}>
@@ -200,7 +245,7 @@ export default function ProductDetails(props: any) {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

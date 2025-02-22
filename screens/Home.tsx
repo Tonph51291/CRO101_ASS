@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import icon from "@/constants/icon";
 import image from "@/constants/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -20,11 +20,32 @@ import ItemProduct from "@/components/ItemProduct";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
 import { NavigationProp } from "@react-navigation/native";
+import { getListProduct } from "@/repositories/apiProduct";
 
 const CARD_WIDTH = Dimensions.get("window").width * 0.35;
 const CARD_HEIGHT = CARD_WIDTH * 1;
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  roasted: string;
+  imagelink_square: string;
+  imagelink_portrait: string;
+  ingredients: string;
+  special_ingredient: string;
+  prices: {
+    size: string;
+    price: string;
+    currency: string;
+  }[];
+  average_rating: number;
+  ratings_count: string;
+  favourite: boolean;
+  type: string;
+  index: number;
+}
 
-function Home(props: any) {
+function Home({ navigation }: any) {
   const category = [
     { id: "1", name: "All" },
     { id: "2", name: "Cappuccino" },
@@ -33,7 +54,35 @@ function Home(props: any) {
     { id: "5", name: "Macchiato" },
   ];
   const [selector, setSelector] = useState("All");
-  const navigation: NavigationProp<RootStackParamList> = useNavigation();
+
+  const [products, setListProducts] = useState<Product[]>([]);
+  const [type, setType] = useState<any[]>([]);
+  const fetchProduct = async () => {
+    try {
+      const responseData = await getListProduct();
+
+      setListProducts(responseData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+  useEffect(() => {
+    const allTypes = products.map((item) => item.type);
+    const uniqueTypes = [...new Set(allTypes)];
+    const typesWithId = [
+      { id: "0", typeName: "All" },
+      ...uniqueTypes.map((type, index) => ({
+        id: (index + 1).toString(),
+        typeName: type,
+      })),
+    ];
+
+    setType(typesWithId); // ✅ Chỉ cập nhật state khi `products` thay đổi
+  }, [products]); // Chạy lại khi `products` thay đổi
+  const [selectedType, setSelectedType] = useState("All");
+
   return (
     <View style={styles.container}>
       <UIHeader iconLeft={icon.menu} iconRight={image.ton} />
@@ -58,23 +107,23 @@ function Home(props: any) {
           style={{ marginTop: 20, marginStart: 10 }}
           horizontal={true}
           keyExtractor={(item) => item.id}
-          data={category}
+          data={type}
           renderItem={({ item }) => {
             return (
               <View style={{ alignItems: "center", marginHorizontal: 10 }}>
                 <Text
                   style={
-                    item.name == selector
+                    item.typeName == selector
                       ? styles.textCategory
                       : styles.textCategory2
                   }
                   onPress={() => {
-                    setSelector(item.name);
+                    setSelector(item.typeName);
                   }}
                 >
-                  {item.name}
+                  {item.typeName}
                 </Text>
-                {item.name == selector ? (
+                {item.typeName == selector ? (
                   <View
                     style={{
                       width: 10,
@@ -94,12 +143,16 @@ function Home(props: any) {
       </View>
 
       <FlatList
-        data={category}
-        keyExtractor={(item) => item.id}
+        data={type}
+        keyExtractor={(item) => item.id + ""}
         renderItem={({ item }) => {
+          const filteredProducts = products.filter(
+            (product) => product.type === item.typeName
+          );
+
           return (
             <View>
-              {item.name == "All" ? (
+              {item.typeName == "All" ? (
                 <Text></Text>
               ) : (
                 <Text
@@ -112,18 +165,19 @@ function Home(props: any) {
                     paddingStart: 10,
                   }}
                 >
-                  {item.name}
+                  {item.typeName}
                 </Text>
               )}
               <FlatList
                 horizontal={true}
-                data={[...Array(9)]} // Replace with your actual data
+                data={filteredProducts} // Replace with your actual data
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <ItemProduct
-                    onPress={() => {
-                      navigation.navigate("ProductDetail");
-                    }}
+                    item={item}
+                    onPress={() =>
+                      navigation.navigate("Details", { products: item })
+                    }
                   />
                 )}
               />

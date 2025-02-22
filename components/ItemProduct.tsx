@@ -16,11 +16,14 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome5";
 
 import { UIHeader } from "../components";
+import { BASE_URL } from "@/repositories/baseURL";
+import { NavigationProp } from "@react-navigation/native";
+import { useNavigation } from "expo-router";
 const CARD_WIDTH = Dimensions.get("window").width * 0.33;
 const CARD_HEIGHT = CARD_WIDTH * 1.9;
-export default function ItemProduct(props: any) {
+export default function ItemProduct({ item, onPress }: any) {
   return (
-    <View
+    <TouchableOpacity
       style={{
         height: CARD_HEIGHT,
         backgroundColor: "#252A32",
@@ -28,6 +31,7 @@ export default function ItemProduct(props: any) {
         borderRadius: 23,
         padding: 15,
       }}
+      onPress={onPress}
     >
       <View
         style={{
@@ -37,9 +41,12 @@ export default function ItemProduct(props: any) {
         }}
       >
         <Image
-          source={require("../assets/images/image5.png")}
+          source={{
+            uri: `${BASE_URL}/${item.imagelink_square}`,
+          }}
           style={{
             width: CARD_WIDTH,
+            height: CARD_WIDTH,
             borderRadius: 10,
             position: "relative",
             resizeMode: "cover",
@@ -75,7 +82,7 @@ export default function ItemProduct(props: any) {
         </View>
       </View>
       <View>
-        <Text style={styles.textNameProduct}>Cappuccino</Text>
+        <Text style={styles.textNameProduct}>{item.name}</Text>
         <Text
           style={{
             color: "white",
@@ -84,7 +91,7 @@ export default function ItemProduct(props: any) {
             marginTop: 5,
           }}
         >
-          With Steamed Milk
+          {item.special_ingredient}
         </Text>
 
         <View
@@ -103,7 +110,7 @@ export default function ItemProduct(props: any) {
             }}
           >
             {" "}
-            $ <Text style={{ color: "white" }}>4.5</Text>
+            $ <Text style={{ color: "white" }}>{item.prices[0].price}</Text>
           </Text>
           <TouchableOpacity
             style={{
@@ -114,13 +121,12 @@ export default function ItemProduct(props: any) {
               alignItems: "center",
               borderRadius: 10,
             }}
-            onPress={props.onPress}
           >
             <Icon name="plus" size={18} color={"white"} />
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 const styles = StyleSheet.create({
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
   textNameProduct: {
     color: "#FFFFFF",
     fontWeight: "400",
-    fontSize: 20,
+    fontSize: 18,
     marginTop: 10,
     fontFamily: "poppins",
     width: CARD_WIDTH,

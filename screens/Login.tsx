@@ -19,10 +19,11 @@ import icon from "@/constants/icon";
 import { useNavigation } from "expo-router";
 import { isValidateEmail, isValidatePassword } from "../utilies/validate";
 import { NavigationProp } from "@react-navigation/native";
+import { login } from "@/repositories/apiUsers";
 
 const screenWidth = Dimensions.get("window").width;
 
-function Login() {
+function Login(props: any) {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,11 +31,39 @@ function Login() {
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
 
-  const handleSignIn = (email: String, password: String) => {
-    if (email === "ton@gmail.com" || password === "123456") {
+  const handleLogin = async () => {
+    setErrorEmail("");
+    setErrorPassword("");
+
+    if (!email.trim()) {
+      setErrorEmail("Không được bỏ trống email");
+      return;
+    }
+    if (!isValidateEmail(email)) {
+      setErrorEmail("Email không đúng định dạng");
+      return;
+    }
+
+    if (!password.trim()) {
+      setErrorPassword("Không được bỏ trống password");
+      return;
+    }
+    if (!isValidatePassword(password)) {
+      setErrorPassword("Password không đúng định dạng");
+      return;
+    }
+
+    try {
+      const user = await login({ email, password });
+
+      if (user.password !== password) {
+        Alert.alert("Lỗi", "Sai mật khẩu");
+        return;
+      }
+
       navigation.navigate("UITab");
-    } else {
-      alert("Sai tai khoan hoac mat khau");
+    } catch (error) {
+      Alert.alert("Lỗi", "Tài khoản hoặc mật khẩu không chính xác");
     }
   };
 
@@ -51,11 +80,6 @@ function Login() {
         keyboardType="email-address"
         value={email}
         onChangeText={(text) => {
-          if (isValidateEmail(text) == false) {
-            setErrorEmail("Email không đúng định dạng");
-          } else {
-            setErrorEmail("");
-          }
           setEmail(text);
         }}
       />
@@ -68,11 +92,6 @@ function Login() {
           secureTextEntry
           value={password}
           onChangeText={(text) => {
-            if (isValidatePassword(text) == false) {
-              setErrorPassword("Password không đúng định dạng");
-            } else {
-              setErrorPassword("");
-            }
             setPassword(text);
           }}
         />
@@ -90,12 +109,7 @@ function Login() {
 
       <Text style={styles.errorText}>{errorPassword}</Text>
 
-      <TouchableOpacity
-        style={styles.styleButton}
-        onPress={() => {
-          handleSignIn(email, password);
-        }}
-      >
+      <TouchableOpacity style={styles.styleButton} onPress={handleLogin}>
         <Text style={styles.textButton}>Sign in</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.styleGG}>
