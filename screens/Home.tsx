@@ -46,13 +46,6 @@ export interface Product {
 }
 
 function Home({ navigation }: any) {
-  const category = [
-    { id: "1", name: "All" },
-    { id: "2", name: "Cappuccino" },
-    { id: "3", name: "Espresso" },
-    { id: "4", name: "Americano" },
-    { id: "5", name: "Macchiato" },
-  ];
   const [selector, setSelector] = useState("All");
 
   const [products, setListProducts] = useState<Product[]>([]);
@@ -68,6 +61,7 @@ function Home({ navigation }: any) {
   useEffect(() => {
     fetchProduct();
   }, []);
+
   useEffect(() => {
     const allTypes = products.map((item) => item.type);
     const uniqueTypes = [...new Set(allTypes)];
@@ -79,13 +73,19 @@ function Home({ navigation }: any) {
       })),
     ];
 
-    setType(typesWithId); // ✅ Chỉ cập nhật state khi `products` thay đổi
-  }, [products]); // Chạy lại khi `products` thay đổi
+    setType(typesWithId);
+  }, [products]);
   const [selectedType, setSelectedType] = useState("All");
 
   return (
     <View style={styles.container}>
-      <UIHeader iconLeft={icon.menu} iconRight={image.ton} />
+      <UIHeader
+        iconLeft={icon.menu}
+        iconRight={image.ton}
+        onPress={() => {
+          navigation.navigate("Settings");
+        }}
+      />
       <Text style={styles.textStyle}>Find the best coffee for you</Text>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <TextInput

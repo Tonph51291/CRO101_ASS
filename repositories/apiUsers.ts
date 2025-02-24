@@ -39,3 +39,28 @@ export const login = async ({ email, password }: UsersLogin) => {
     }
   } catch (error) {}
 };
+
+export const getUserById = async (idUser: any) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/users/${idUser}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const updateUserById = async (userId: string, data: any) => {
+  try {
+    const response = await axios.put(
+      `https://your-api.com/users/${userId}`,
+      data
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Lỗi khi cập nhật user:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Lỗi kết nối đến server",
+    };
+  }
+};

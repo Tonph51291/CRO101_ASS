@@ -8,11 +8,17 @@ import { Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { Modal } from "react-native";
 import { TouchableOpacity } from "react-native";
-export default function SettingScreen() {
+export default function SettingScreen({ navigation }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.container}>
-      <UIHeader iconLeft={image.back} title="Setting" />
+      <UIHeader
+        iconLeft={image.back}
+        title="Setting"
+        onPress={() => {
+          navigation.goBack();
+        }}
+      />
       <View style={styles.containerMenu}>
         <View style={styles.containerRow}>
           <View style={styles.containerIcon}>
@@ -26,7 +32,14 @@ export default function SettingScreen() {
             <Icon name="user" color={"#D17842"} size={20} />
           </View>
           <Text style={styles.styleText}>Personal Details</Text>
-          <Icon name="chevron-right" color={"#AEAEAE"} size={25} />
+          <Icon
+            name="chevron-right"
+            color={"#AEAEAE"}
+            size={25}
+            onPress={() => {
+              navigation.navigate("PersonalDetailsScreens");
+            }}
+          />
         </View>
         <View style={styles.containerRow}>
           <View style={styles.containerIcon}>

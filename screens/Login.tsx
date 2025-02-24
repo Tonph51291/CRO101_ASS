@@ -20,13 +20,14 @@ import { useNavigation } from "expo-router";
 import { isValidateEmail, isValidatePassword } from "../utilies/validate";
 import { NavigationProp } from "@react-navigation/native";
 import { login } from "@/repositories/apiUsers";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 
 function Login(props: any) {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("ton@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
@@ -60,7 +61,7 @@ function Login(props: any) {
         Alert.alert("Lỗi", "Sai mật khẩu");
         return;
       }
-
+      await AsyncStorage.setItem("userId", user.id);
       navigation.navigate("UITab");
     } catch (error) {
       Alert.alert("Lỗi", "Tài khoản hoặc mật khẩu không chính xác");

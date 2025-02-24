@@ -2,10 +2,42 @@ import { UIHeader } from "@/components";
 import { icon } from "@/constants";
 import Colors from "@/constants/Colors";
 import image from "@/constants/image";
+import { getPaymentById } from "@/repositories/apiPayment";
+import { BASE_URL } from "@/repositories/baseURL";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useCallback, useState } from "react";
+import { FlatList } from "react-native";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function OrderHistoryScreen() {
+  const [listPayment, setListPayment] = useState<any[]>([]);
+
+  const sumPriceItem = (price: string, quantity: number) => {
+    const priceNumber = parseFloat(price); // Chuyển string thành số
+    return priceNumber * quantity;
+  };
+
+  const fetchPayment = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        alert("Vui lòng đăng nhập trước!");
+        return;
+      }
+      const responseData = await getPaymentById(userId);
+      setListPayment(responseData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      fetchPayment();
+    }, [])
+  );
+  console.log(listPayment);
   return (
     <View style={styles.container}>
       <UIHeader
@@ -13,79 +45,91 @@ export default function OrderHistoryScreen() {
         title="Order History"
         iconRight={image.ton}
       />
-
-      <View>
-        <View style={styles.dateContainer}>
-          <View>
-            <Text style={styles.textDate}>Order Date</Text>
-            <Text style={styles.textTimeOder}>20/09/2025</Text>
-          </View>
-          <View style={{ alignItems: "flex-end" }}>
-            <Text style={styles.textDate}>Order Date</Text>
-            <Text style={styles.textPrice}>$ 750</Text>
-          </View>
-        </View>
-        <LinearGradient
-          colors={["#262B33", "#262B330"]}
-          style={styles.containerCard}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              style={styles.styleImage}
-              source={require("@/assets/images/image5.png")}
-            />
+      <FlatList
+        data={listPayment}
+        keyExtractor={(item) => item.id + ""}
+        renderItem={({ item }) => {
+          console.log(item.details[0].prices);
+          return (
             <View>
-              <Text style={styles.textName}>Cappuccino</Text>
-              <Text style={styles.textTitle}>With Steamed Milk</Text>
-            </View>
-            <Text style={styles.textPriceTitle}>
-              $ <Text style={{ color: "white" }}>35</Text>
-            </Text>
-          </View>
-          <View style={styles.containerQuality}>
-            <View style={styles.containerSumPriceAndSize}>
-              <View style={styles.backContainerSize}>
-                <Text style={styles.textSize}>S</Text>
+              <View style={styles.dateContainer}>
+                <View>
+                  <Text style={styles.textDate}>Order Date</Text>
+                  <Text style={styles.textTimeOder}>{item.date}</Text>
+                </View>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text style={styles.textDate}>Order Date</Text>
+                  <Text style={styles.textPrice}>
+                    {" "}
+                    {Number(item.amount).toFixed(2)}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.backContainerSumPrice}>
-                <Text style={styles.textSumPrice}>
-                  $ <Text style={{ color: "white" }}>35</Text>
-                </Text>
-              </View>
-            </View>
+              {item.details.map((item: any, index: any) => (
+                <View>
+                  <LinearGradient
+                    colors={["#262B33", "#262B330"]}
+                    style={styles.containerCard}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Image
+                        style={styles.styleImage}
+                        source={{ uri: `${BASE_URL}/${item.imagelink_square}` }}
+                      />
+                      <View>
+                        <Text style={styles.textName}>{item.name}</Text>
+                        <Text style={styles.textTitle}>With Steamed Milk</Text>
+                      </View>
+                      <Text style={styles.textPriceTitle}>
+                        ${" "}
+                        <Text style={{ color: "white" }}>
+                          {" "}
+                          {Number(item.itemPrice).toFixed(2)}
+                        </Text>
+                      </Text>
+                    </View>
+                    {item.prices.map((item: any, index: any) => (
+                      <View style={styles.containerQuality}>
+                        <View style={styles.containerSumPriceAndSize}>
+                          <View style={styles.backContainerSize}>
+                            <Text style={styles.textSize}>{item.size}</Text>
+                          </View>
+                          <View style={styles.backContainerSumPrice}>
+                            <Text style={styles.textSumPrice}>
+                              ${" "}
+                              <Text style={{ color: "white" }}>
+                                {item.price}
+                              </Text>
+                            </Text>
+                          </View>
+                        </View>
 
-            <Text style={styles.textSumPrice}>
-              X <Text style={{ color: "white" }}>2</Text>
-            </Text>
-            <Text style={styles.textSumPrice}>8</Text>
-          </View>
-          <View style={styles.containerQuality}>
-            <View style={styles.containerSumPriceAndSize}>
-              <View style={styles.backContainerSize}>
-                <Text style={styles.textSize}>S</Text>
-              </View>
-              <View style={styles.backContainerSumPrice}>
-                <Text style={styles.textSumPrice}>
-                  $ <Text style={{ color: "white" }}>35</Text>
-                </Text>
-              </View>
+                        <Text style={styles.textSumPrice}>
+                          X{" "}
+                          <Text style={{ color: "white" }}>
+                            {item.quantity}
+                          </Text>
+                        </Text>
+                        <Text style={styles.textSumPrice}>
+                          {sumPriceItem(item.price, item.quantity)}
+                        </Text>
+                      </View>
+                    ))}
+                  </LinearGradient>
+                </View>
+              ))}
             </View>
-
-            <Text style={styles.textSumPrice}>
-              X <Text style={{ color: "white" }}>2</Text>
-            </Text>
-            <Text style={styles.textSumPrice}>8</Text>
-          </View>
-        </LinearGradient>
-      </View>
+          );
+        }}
+      />
     </View>
   );
 }

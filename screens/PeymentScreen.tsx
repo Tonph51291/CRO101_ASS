@@ -16,8 +16,66 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addPayment } from "@/repositories/apiPayment";
+import { getCartByUserId, updateCartById } from "@/repositories/apiCart";
 
-export default function PaymentScreen(props: any) {
+const formatDate = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  let suffix = "th";
+  if (day % 10 === 1 && day % 100 !== 11) {
+    suffix = "st";
+  } else if (day % 10 === 2 && day % 100 !== 12) {
+    suffix = "nd";
+  } else if (day % 10 === 3 && day % 100 !== 13) {
+    suffix = "rd";
+  }
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  const formattedHours = hours < 10 ? `0${hours}` : hours;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${day}${suffix} ${month} ${year}, ${formattedHours}:${formattedMinutes}`;
+};
+
+export default function PaymentScreen({ navigation, route }: any) {
+  console.log(route.params);
+  const handlePayment = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        alert("Vui lòng đăng nhập trước!");
+        return;
+      }
+      const paymentData = {
+        userId: userId || "",
+        amount: route.params.amount,
+        date: formatDate(new Date()),
+        status: "completed",
+        paymentMode: "Credit Card",
+        details: route.params.details,
+      };
+      // Gửi dữ liệu thanh toán lên server
+      console.log(paymentData);
+      await addPayment(paymentData);
+
+      // Sau khi đặt hàng thành công, lấy cart của user và xóa hết các sản phẩm trong giỏ hàng
+      const cartRes = await getCartByUserId(userId);
+      console.log("Cart res", cartRes.length);
+      if (cartRes && cartRes.length > 0) {
+        const cart = cartRes[0];
+        await updateCartById(cart.id, []);
+        navigation.navigate("UITab", { screen: "OrderHistory" });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const chuyenTrang = () => {
+    navigation.navigate("UITab", { screen: "OrderHistory" });
+  };
+
   return (
     <View style={styles.container}>
       <UIHeader iconLeft={image.back} />
@@ -100,10 +158,13 @@ export default function PaymentScreen(props: any) {
             }}
           >
             {" "}
-            $ <Text style={{ color: "white" }}> 10.0</Text>
+            $
+            <Text style={{ color: "white" }}>
+              {Number(route.params?.amount).toFixed(2)}
+            </Text>
           </Text>
         </View>
-        <TouchableOpacity style={styles.buttonAdd}>
+        <TouchableOpacity style={styles.buttonAdd} onPress={handlePayment}>
           <Text style={{ color: "#FFFFFF", fontWeight: "900" }}>
             Pay from Credit Card
           </Text>

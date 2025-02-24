@@ -28,15 +28,35 @@ function Register(props: any) {
   const [configPassword, setConfigPassword] = useState("");
 
   const login = async () => {
-    console.log("au ");
+    // Kiểm tra dữ liệu nhập vào
+    if (!name.trim()) {
+      alert("Vui lòng nhập tên!");
+      return;
+    }
+    if (!email.includes("@") || !email.includes(".")) {
+      alert("Email không hợp lệ!");
+      return;
+    }
+    if (password.length < 6) {
+      alert("Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
+    if (password !== configPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    // Gọi API đăng ký
     try {
       await register({ name, email, password });
-      console.log("Oke");
-      alert("Thành công");
+      alert("Đăng ký thành công!");
+      navigation.navigate("Login"); // Chuyển đến màn hình đăng nhập
     } catch (error) {
       console.log("Lỗi", error);
+      alert("Đăng ký thất bại. Vui lòng thử lại!");
     }
   };
+
   return (
     <View style={styles.container}>
       <Image source={image.avatar} style={{ height: 150, width: 150 }} />

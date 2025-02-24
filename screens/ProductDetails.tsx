@@ -1,6 +1,11 @@
 import { UIHeader } from "@/components";
 import Colors from "@/constants/Colors";
-import { SafeAreaView, Text, TouchableOpacity } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+} from "react-native";
 import image from "../constants/image";
 import { ImageBackground } from "react-native";
 import { Image, StyleSheet, View } from "react-native";
@@ -8,6 +13,12 @@ import { useNavigation } from "expo-router";
 import { NavigationProp, useRoute } from "@react-navigation/native";
 import { BASE_URL } from "@/repositories/baseURL";
 import { useState } from "react";
+import {
+  addCart,
+  getCartByUserId,
+  updateCartById,
+} from "@/repositories/apiCart";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProductDetails() {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
@@ -37,7 +48,77 @@ export default function ProductDetails() {
     });
   };
 
-  console.log(products.prices);
+  const addToCart = async (products: any, selectedSizes: any[]) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      console.log("User ID:", userId);
+
+      if (!userId) {
+        alert("Vui lòng đăng nhập trước!");
+        return;
+      }
+
+      // Lọc và chọn giá theo size
+      const selectedPrices = products.prices
+        .filter((priceItem: any) => selectedSizes.includes(priceItem.size))
+        .map((priceItem: any) => ({
+          size: priceItem.size,
+          price: priceItem.price,
+          currency: priceItem.currency,
+          quantity: 1, // Số lượng mặc định
+        }));
+
+      // Kiểm tra giỏ hàng hiện tại
+      const res = await getCartByUserId(userId);
+      console.log("Cart API Response:", res);
+
+      let cart = res?.[0]; // Lấy giỏ hàng đầu tiên nếu có
+
+      if (!cart) {
+        console.log("Không tìm thấy giỏ hàng, tạo mới...");
+
+        cart = {
+          userId: userId,
+          items: [],
+        };
+
+        const newCart = await addCart(cart);
+        console.log("Giỏ hàng mới được tạo:", newCart);
+
+        cart.id = newCart.id; // Lưu ID giỏ hàng mới
+      }
+      if (selectedPrices.length == 0) {
+        ToastAndroid.show(
+          "Vui lòng chọn size để thêm vào giỏ hàng ",
+          ToastAndroid.BOTTOM
+        );
+        return;
+      }
+      // Thêm sản phẩm vào giỏ hàng
+      cart.items.push({
+        productId: products.id,
+        name: products.name,
+        roasted: products.roasted,
+        imagelink_square: products.imagelink_square,
+        special_ingredient: products.special_ingredient,
+        prices: selectedPrices,
+        type: products.type,
+        index: products.index,
+      });
+
+      // Cập nhật giỏ hàng
+      await updateCartById(cart.id, cart.items);
+      navigation.goBack();
+      ToastAndroid.show(
+        "Đã thêm vào giỏ hàng thành công ",
+        ToastAndroid.BOTTOM
+      );
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Thêm sản phẩm vào giỏ hàng thất bại");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.viewImg}>
@@ -209,7 +290,6 @@ export default function ProductDetails() {
           {products.prices.map((data: any) => {
             const isSelected = selectedSizes.includes(data.size);
 
-            console.log("Checking size:", data.price, "=>", isSelected);
             return (
               <TouchableOpacity
                 key={data.size}
@@ -240,8 +320,13 @@ export default function ProductDetails() {
               $ <Text style={{ color: "white" }}> {totalPrice}</Text>
             </Text>
           </View>
-          <TouchableOpacity style={styles.buttonAdd}>
-            <Text style={{ color: "#FFFFFF", fontWeight: "900" }}>300ml</Text>
+          <TouchableOpacity
+            style={styles.buttonAdd}
+            onPress={() => addToCart(products, selectedSizes)}
+          >
+            <Text style={{ color: "#FFFFFF", fontWeight: "900" }}>
+              Add to cart
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

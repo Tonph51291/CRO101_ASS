@@ -1,45 +1,125 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
-import symbolicateStackTrace from "react-native/Libraries/Core/Devtools/symbolicateStackTrace";
 import image from "@/constants/image";
-import { TextInput } from "react-native";
-import { TouchableOpacity } from "react-native";
-
 import { Ionicons } from "@expo/vector-icons";
 import { UIHeader } from "@/components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserById, updateUserById } from "@/repositories/apiUsers"; // Import API
 
-export default function PersonalDetailsScreens() {
+export default function PersonalDetailsScreens({ navigation }: any) {
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+
+  // Lấy thông tin user từ AsyncStorage và API
+  const getUser = async () => {
+    try {
+      const storedUserId = await AsyncStorage.getItem("userId");
+      if (!storedUserId) {
+        Alert.alert("Thông báo", "Vui lòng đăng nhập trước!");
+        return;
+      }
+      setUserId(storedUserId); // Lưu userId để cập nhật sau
+
+      const responseData = await getUserById(storedUserId);
+      if (responseData) {
+        setName(responseData.name);
+        setEmail(responseData.email);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin user:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  // Hàm cập nhật thông tin tài khoản
+  const updateUser = async () => {
+    if (!userId) {
+      console.log("Loi");
+      return;
+    }
+
+    if (password && password !== rePassword) {
+      Alert.alert("Lỗi", "Mật khẩu không khớp. Vui lòng nhập lại!");
+      return;
+    }
+
+    try {
+      const updatedData: any = { name, email };
+      if (password) {
+        updatedData.password = password; // Chỉ thêm password nếu người dùng nhập
+      }
+
+      const response = await updateUserById(userId, updatedData);
+
+      if (response.success) {
+        Alert.alert("Thành công", "Cập nhật thông tin thành công!");
+        navigation.goBack();
+      } else {
+        Alert.alert("Lỗi", "Có lỗi xảy ra, vui lòng thử lại!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật user:", error);
+      Alert.alert("Lỗi", "Không thể cập nhật thông tin.");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <UIHeader iconLeft={image.back} title="Setting" />
+      <UIHeader
+        iconLeft={image.back}
+        title="Cài đặt"
+        onPress={() => navigation.goBack()}
+      />
       <Image
         source={{ uri: "https://randomuser.me/api/portraits/men/1.jpg" }}
         style={styles.avatar}
       />
 
-      {/* Ô nhập liệu */}
+      {/* Ô nhập tên */}
       <TextInput
         style={styles.input}
-        placeholder="Nguyen Van A"
+        value={name}
+        onChangeText={setName}
+        placeholder="Nguyễn Văn A"
         placeholderTextColor="#A0A0A0"
       />
+
+      {/* Ô nhập email */}
       <TextInput
         style={styles.input}
+        value={email}
+        onChangeText={setEmail}
         placeholder="vana@gmail.com"
         placeholderTextColor="#A0A0A0"
         keyboardType="email-address"
       />
 
-      {/* Password Input */}
+      {/* Ô nhập mật khẩu */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Password"
+          placeholder="Mật khẩu mới (nếu thay đổi)"
           placeholderTextColor="#A0A0A0"
           secureTextEntry={!showPassword}
+          onChangeText={setPassword}
+          value={password}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Ionicons
@@ -50,13 +130,15 @@ export default function PersonalDetailsScreens() {
         </TouchableOpacity>
       </View>
 
-      {/* Re-type Password */}
+      {/* Ô nhập lại mật khẩu */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Re-type password"
+          placeholder="Nhập lại mật khẩu"
           placeholderTextColor="#A0A0A0"
           secureTextEntry={!showRePassword}
+          onChangeText={setRePassword}
+          value={rePassword}
         />
         <TouchableOpacity onPress={() => setShowRePassword(!showRePassword)}>
           <Ionicons
@@ -67,9 +149,8 @@ export default function PersonalDetailsScreens() {
         </TouchableOpacity>
       </View>
 
-      {/* Nút Save */}
-      <TouchableOpacity style={styles.saveButton}>
-        <Text style={styles.saveText}>Save</Text>
+      <TouchableOpacity style={styles.saveButton} onPress={updateUser}>
+        <Text style={styles.saveText}>Lưu</Text>
       </TouchableOpacity>
     </View>
   );
@@ -106,7 +187,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     marginTop: 15,
-    color: "white",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
